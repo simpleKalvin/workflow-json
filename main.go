@@ -30,9 +30,19 @@ func run() {
 	//wf.NewItem("123").Copytext("{hello jack}").Arg("{hello jack}")
 	argList := wf.Args()
 	item := wf.NewItem("print 'enter' copy json result")
+	if len(argList) <= 0 {
+		wf.Warn("请输入合法json字符串", "")
+		wf.SendFeedback()
+		return
+	}
 	inputString := argList[0]
 	var str bytes.Buffer
-	_ = json.Indent(&str, []byte(inputString), "", "    ")
+	err := json.Indent(&str, []byte(inputString), "", "    ")
+	if err != nil {
+		wf.Warn("请输入合法json字符串", inputString)
+		wf.SendFeedback()
+		return
+	}
 	item.Arg(str.String()).Valid(true)
 	// And send the results to Alfred
 	wf.SendFeedback()
